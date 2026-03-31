@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVVV Portal - Integrated Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- MAIN PAGE STYLES --- */
+        :root { --dark-blue: #1a237e; --mid-blue: #283593; --yellow: #ffc107; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f8f9fa; overflow-x: hidden; }
+
+        .top-header { background: var(--dark-blue); color: white; padding: 10px 5%; display: flex; justify-content: space-between; font-size: 13px; }
+        .top-header a { color: white; text-decoration: none; margin-left: 10px; cursor: pointer; }
+
+        nav { background: var(--mid-blue); display: flex; justify-content: center; position: sticky; top: 0; z-index: 1000; }
+        .menu { display: flex; list-style: none; }
+        .menu li a { color: white; padding: 20px 15px; display: block; text-decoration: none; font-weight: 600; }
+
+        .slider-container { position: relative; height: 500px; overflow: hidden; background: #000; }
+        .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 1s; background-size: cover; background-position: center; }
+        .slide.active { opacity: 1; }
+
+        .floating-cards { position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1100px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; z-index: 100; }
+        .card { background: white; padding: 30px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-radius: 5px; }
+        .btn { background: var(--yellow); padding: 10px 20px; text-decoration: none; color: black; font-weight: bold; display: inline-block; margin-top: 15px; border: none; cursor: pointer; }
+        .btn-special { background: var(--dark-blue); color: white; width: 100%; margin-bottom: 10px; }
+
+        /* --- LOGIN PAGE OVERLAY STYLES --- */
+        #login-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #d1d9e6;
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-box { background: white; width: 380px; padding: 25px; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center; }
+        .login-box .logo { width: 150px; margin-bottom: 20px; }
+        .login-box h3 { color: #555; font-weight: normal; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .login-box input[type="text"], .login-box input[type="password"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        .login-btn { background: #4b3049; color: white; border: none; padding: 10px 25px; cursor: pointer; border-radius: 4px; float: right; }
+        .close-login { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #333; }
+
+        /* --- PRANK IMAGE STYLE --- */
+        #prank-container {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 3000;
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #prank-container img { max-width: 80%; border-radius: 10px; }
+        #prank-container h1 { margin-top: 20px; color: #d32f2f; font-size: 40px; }
+    </style>
+</head>
+<body>
+
+    <div id="main-site">
+        <div class="top-header">
+            <div>?? 1800 102 9191 | ?? info@svvv.edu.in</div>
+            <div>
+                <a href="#">Placement</a> | <a href="#">Alumni</a> | 
+                <a onclick="showLogin()"><strong>ERP Login</strong></a>
+            </div>
+        </div>
+
+        <nav>
+            <ul class="menu">
+                <li><a href="#">ABOUT</a></li>
+                <li><a href="#">ACADEMICS</a></li>
+                <li><a href="#">ADMISSION</a></li>
+                <li><a href="#">CONTACT</a></li>
+            </ul>
+        </nav>
+
+        <div class="slider-container">
+            <div class="slide active" style="background-image: url('https://www.svvv.edu.in/assets/images/slider/slide-1.jpg')"></div>
+            <div class="slide" style="background-image: url('https://www.svvv.edu.in/assets/images/slider/slide2.jpg')"></div>
+            
+            <div class="floating-cards">
+                <div class="card"><h3>360° View</h3><a class="btn">Explore Now</a></div>
+                <div class="card" style="border-top: 5px solid var(--dark-blue);">
+                    <button onclick="showLogin()" class="btn btn-special">Online Admission 2026</button>
+                    <a class="btn">Register Now</a>
+                </div>
+                <div class="card"><h3>Enquiry</h3><a class="btn">Ask Now</a></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-overlay">
+        <span class="close-login" onclick="hideLogin()">&times;</span>
+        <div class="login-box">
+            <h3>AccSoft 2.0 Login</h3>
+            <img src="https://ums.svvv.edu.in/AccSoft_SVVV/images/SVVV.png" class="logo" alt="SVVV Logo">
+            <div style="margin-bottom:15px; font-weight: bold;">
+                <input type="radio" checked> Parent / Student
+            </div>
+            <input type="text" id="username" placeholder="Login name">
+            <input type="password" id="password" placeholder="Password">
+            <div style="overflow:auto; margin-top:15px;">
+                <div style="float:left; text-align:left; font-size:13px;">
+                    <a href="#" style="text-decoration:none; color:#0066cc;">Forgot Password?</a><br>
+                    <a href="#" style="text-decoration:none; color:#0066cc;">SignUp (New User)</a>
+                </div>
+                <button class="login-btn" onclick="triggerPrank()">Login »</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="prank-container">
+        <span class="close-login" onclick="closePrank()">&times;</span>
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoZzd6eWR3M2N5eDRrYm56dzZ0eXJ0ZHV6eXJ0ZHV6eXJ0ZHV6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKVUn7iM8FMEU24/giphy.gif" alt="April Fool">
+        <h1>APRIL FOOL! ??</h1>
+        <p>SVVV ??? ???? ?????? ??!</p>
+    </div>
+
+    <script>
+        // Slider Logic
+        let slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+        setInterval(() => {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }, 4000);
+
+        // Show/Hide Login
+        function showLogin() {
+            document.getElementById('login-overlay').style.display = 'flex';
+            document.getElementById('main-site').style.filter = 'blur(5px)';
+        }
+        function hideLogin() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-site').style.filter = 'none';
+        }
+
+        // Prank Function
+        function triggerPrank() {
+            let u = document.getElementById('username').value;
+            let p = document.getElementById('password').value;
+
+            if(u === "" || p === "") {
+                alert("Please enter credentials first!");
+            } else {
+                document.getElementById('prank-container').style.display = 'flex';
+            }
+        }
+
+        function closePrank() {
+            document.getElementById('prank-container').style.display = 'none';
+            hideLogin();
+        }
+    </script>
+</body>
+</html>
